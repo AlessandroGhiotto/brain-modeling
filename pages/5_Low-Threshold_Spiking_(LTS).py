@@ -4,18 +4,16 @@ from utilities import *
 
 
 def main():
-    st.title("Intrinsically Bursting (IB)", anchor=False)
+    st.title("Low-Threshold Spiking (LTS)", anchor=False)
 
     st.markdown(
-        """IB neurons fire a stereotypical burst of
-        spikes followed by repetitive single spikes. In the
-        model, this corresponds to c = 55 mV (high voltage reset)
-        and d = 4 (large after-spike jump of u). During the initial burst,
-        variable u builds up and eventually switches the dynamics from
-        bursting to spiking."""
+        """LTS neurons can also fire high-frequency
+        trains of action potentials, but with a noticeable spike
+        frequency adaptation. These neurons have low firing thresholds,
+        which is accounted for by b = 0.25 in the model. """
     )
 
-    st.latex(r"""a = 0.02, \;\; b = 0.2, \;\; c = -55, \;\; d = 4""")
+    st.latex(r"""a = 0.02, \;\; b = 0.25, \;\; c = -65, \;\; d = 2""")
 
     current = st.slider(
         "Input Current magnitude (mA)",
@@ -31,7 +29,7 @@ def main():
     I_ = np.zeros(len(time_series))
     I_[200:800] = current
 
-    a, b, c, d = PARAMS["IB"].values()
+    a, b, c, d = PARAMS["LTS"].values()
     time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext=I_)
 
     st.plotly_chart(

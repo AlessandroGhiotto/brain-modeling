@@ -4,34 +4,31 @@ from utilities import *
 
 
 def main():
-    st.title("Intrinsically Bursting (IB)", anchor=False)
+    st.title("Integrator", anchor=False)
 
     st.markdown(
-        """IB neurons fire a stereotypical burst of
-        spikes followed by repetitive single spikes. In the
-        model, this corresponds to c = 55 mV (high voltage reset)
-        and d = 4 (large after-spike jump of u). During the initial burst,
-        variable u builds up and eventually switches the dynamics from
-        bursting to spiking."""
+        """The Integrator neuron doesn't fire immidieately when a current is supplied,
+        but it integrates the input over time and fires a spike when the membrane potential
+        reaches a certain threshold.
+        """
     )
 
-    st.latex(r"""a = 0.02, \;\; b = 0.2, \;\; c = -55, \;\; d = 4""")
+    st.latex(r"""a = 0.02, \;\; b = -0.1, \;\; c = -55, \;\; d = 6""")
 
-    current = st.slider(
-        "Input Current magnitude (mA)",
-        min_value=0,
-        max_value=30,
-        value=10,
-        step=1,
+    coefficient = st.slider(
+        "Angular Coefficient of the Input Current",
+        min_value=0.00,
+        max_value=0.1,
+        value=0.03,
+        step=0.01,
     )
 
     T = 1000
     dt = 1
     time_series = np.arange(0, T, dt)
-    I_ = np.zeros(len(time_series))
-    I_[200:800] = current
+    I_ = coefficient * time_series
 
-    a, b, c, d = PARAMS["IB"].values()
+    a, b, c, d = PARAMS["IT"].values()
     time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext=I_)
 
     st.plotly_chart(

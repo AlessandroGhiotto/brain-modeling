@@ -32,26 +32,32 @@ def main():
     I_ = np.zeros(len(time_series))
     I_[200:800] = current
 
+    a, b, c, d = PARAMS["RS"].values()
+    time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext=I_)
+
     st.plotly_chart(
         plot_tensor(I_, "Current (mA)", key="input"),
         key="input_0",
     )
 
-    a, b, c, d = PARAMS["RS"].values()
-
-    time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext=I_)
-
     st.plotly_chart(
-        plot_tensor(V, "Membrane Potential (mV)", key="voltage"),
+        plot_tensor(V, "V - Membrane Potential (mV)", key="voltage"),
         key="voltage_0",
     )
 
     st.plotly_chart(
-        plot_tensor(w, "Recovery Variable", key="recovery"),
+        plot_tensor(w, "w - Recovery Variable", key="recovery"),
         key="recovery_0",
     )
 
-    st.markdown("Plot of the phase plane for a constant input current.")
+    ### Second part
+
+    st.markdown(
+        """
+        ---
+        Plot of the phase plane for a constant input current.
+        """
+    )
 
     current = st.slider(
         "Constant Input Current (mA)",
@@ -61,7 +67,7 @@ def main():
         step=1,
     )
 
-    time, V, w = izhikevic_model(a, b, c, d, dt=1, T=1000, I_ext=current)
+    time, V, w = izhikevic_model(a, b, c, d, dt=1, T=300, I_ext=current)
 
     V_range, V_null, u_null = compute_nullclines(a, b, current)
     V_grid, u_grid, dV_grid, du_grid = compute_vector_field(a, b, current)

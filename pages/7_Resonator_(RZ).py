@@ -4,22 +4,30 @@ from utilities import *
 
 
 def main():
-    st.title("Intrinsically Bursting (IB)", anchor=False)
+    st.title("Resonator (RZ)", anchor=False)
 
     st.markdown(
-        """IB neurons fire a stereotypical burst of
-        spikes followed by repetitive single spikes. In the
-        model, this corresponds to c = 55 mV (high voltage reset)
-        and d = 4 (large after-spike jump of u). During the initial burst,
-        variable u builds up and eventually switches the dynamics from
-        bursting to spiking."""
+        """RZ neurons have damped or sustained subthreshold
+        oscillations. They resonate to rhythmic inputs
+        having appropriate frequency. This behavior corresponds to a = 0.1 and b = 0.26.
+        Notice that there is a bistability of resting and repetitive spiking
+        states: The neuron can be switched between the states by an
+        appropriately timed brief stimuli.
+        """
     )
 
-    st.latex(r"""a = 0.02, \;\; b = 0.2, \;\; c = -55, \;\; d = 4""")
+    st.latex(r"""a = 0.1, \;\; b = 0.26, \;\; c = -65, \;\; d = 2""")
 
+    st.markdown(
+        """
+        During the resting state, characterized by small oscillations in membrane 
+        potential, a current of 0.19 mA is applied from 200 to 600 ms. Afterward, a brief 5 ms 
+        stimulus is delivered with a current equal to the value selected in the slider below.
+        """
+    )
     current = st.slider(
         "Input Current magnitude (mA)",
-        min_value=0,
+        min_value=1,
         max_value=30,
         value=10,
         step=1,
@@ -29,9 +37,10 @@ def main():
     dt = 1
     time_series = np.arange(0, T, dt)
     I_ = np.zeros(len(time_series))
-    I_[200:800] = current
+    I_[200:800] = 0.19
+    I_[600:605] = current
 
-    a, b, c, d = PARAMS["IB"].values()
+    a, b, c, d = PARAMS["RZ"].values()
     time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext=I_)
 
     st.plotly_chart(
@@ -62,7 +71,7 @@ def main():
         "Constant Input Current (mA)",
         min_value=0,
         max_value=30,
-        value=10,
+        value=3,
         step=1,
     )
 

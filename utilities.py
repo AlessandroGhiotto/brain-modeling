@@ -16,6 +16,7 @@ PARAMS = {
     "LTS": {"a": 0.02, "b": 0.25, "c": -65, "d": 2},
     "TC": {"a": 0.02, "b": 0.25, "c": -65, "d": 0.05},
     "RZ": {"a": 0.1, "b": 0.26, "c": -65, "d": 2},
+    "IT": {"a": 0.02, "b": -0.1, "c": -55, "d": 6},
 }
 
 
@@ -77,8 +78,8 @@ def compute_nullclines(a, b, I):
 
 def compute_vector_field(a, b, I):
     """Compute the vector field in phase space."""
-    V_vals = np.linspace(-85, 35, 20)
-    u_vals = np.linspace(-20, 15, 20)
+    V_vals = np.linspace(-85, 35, 25)
+    u_vals = np.linspace(-20, 15, 25)
 
     V, w = np.meshgrid(V_vals, u_vals)
 
@@ -158,8 +159,8 @@ def plot_phase_plane(I_ext, a, b, c, d, v0=-70, w0=-15):
     axes[0].legend()
 
     # Phase plane: V vs. w
-    axes[1].plot(V_range, V_null, label=r"$\dot v = 0$", color="blue")
-    axes[1].plot(V_range, u_null, label=r"$\dot w = 0$", color="green")
+    axes[1].plot(V_range, V_null, label="V nullcline", color="blue")
+    axes[1].plot(V_range, u_null, label="w nullcline", color="green")
 
     # Plot vector field
     axes[1].quiver(V_grid, u_grid, dV_grid, du_grid, color="gray", alpha=0.5, scale=30)
@@ -232,7 +233,7 @@ def plot_two_tensors(
     ylabel: str = None,
     key=None,
 ):
-    x_data = np.linspace(0, 1000, len(y_data1))
+    x_data = np.linspace(0, len(y_data1), len(y_data1))
 
     fig = go.Figure()
     fig.add_trace(
@@ -265,7 +266,7 @@ def plot_two_tensors(
         font=dict(family="Arial", size=12),
         width=400,
         height=400,
-        margin=dict(l=30, r=30, t=20, b=20),
+        margin=dict(l=30, r=35, t=75, b=10),
         legend=dict(x=0.5, y=1.0, xanchor="center", yanchor="bottom", orientation="h"),
     )
 
@@ -312,7 +313,7 @@ def plot_phase_plane(
         u_grid,
         dV_grid,
         du_grid,
-        scale=1.5,  # Adjusts vector length
+        scale=1.3,  # Adjusts vector length
         arrow_scale=0.3,  # Size of arrowheads
         name="Vector Field",
         line_width=1,
@@ -326,7 +327,7 @@ def plot_phase_plane(
             x=V,
             y=w,
             mode="lines",
-            name="trajectory",
+            name="Trajectory",
             line=dict(color="#06d6a0", width=1),
         )
     )
@@ -357,12 +358,17 @@ def plot_phase_plane(
 
     # Layout adjustments
     fig.update_layout(
-        title="Phase Plane",
+        title=dict(
+            text="Phase Plane",
+            x=0.05,  # move the title
+            font=dict(size=20),  # Increases font size
+        ),
         xaxis_title="V (Membrane Potential mV)",
         yaxis_title="w (Recovery Variable)",
-        xaxis=dict(range=[-85, 40]),
-        yaxis=dict(range=[-20, 15]),
+        xaxis=dict(range=[-85, 40], showgrid=False, zeroline=False),
+        yaxis=dict(range=[-20, 15], showgrid=False, zeroline=False),
         legend=dict(x=0.8, y=1),
+        font=dict(family="Arial", size=12),
         width=500,
         height=700,
     )

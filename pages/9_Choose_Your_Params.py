@@ -1,27 +1,73 @@
 import numpy as np
 import streamlit as st
+import random
 from utilities import *
 
 
 def main():
-    st.title("Intrinsically Bursting (IB)", anchor=False)
+    st.title("Custom Model", anchor=False)
 
     st.markdown(
-        """IB neurons fire a stereotypical burst of
-        spikes followed by repetitive single spikes. In the
-        model, this corresponds to c = 55 mV (high voltage reset)
-        and d = 4 (large after-spike jump of u). During the initial burst,
-        variable u builds up and eventually switches the dynamics from
-        bursting to spiking."""
+        """Welcome to the parameter selection page! Here, you can customize the values of 
+        a, b, c, and d to explore their impact on the model's dynamics. Adjusting these 
+        parameters allows you to analyze how different settings influence the system's behavior, 
+        making it a valuable tool for studying its evolution and responses. You can pick them
+        in the sidebar on the left.
+        """
     )
 
-    st.latex(r"""a = 0.02, \;\; b = 0.2, \;\; c = -55, \;\; d = 4""")
+    ### PARAMETERS
+    # defaults
+    A, B, C, D = 0.02, 0.2, -65, 8.0
+    CURRENT = 10
+
+    if "slider_version" not in st.session_state:
+        st.session_state["slider_version"] = 1
+
+    def reset_sliders():
+        st.session_state["slider_version"] = +random.randint(1, 100)
+
+    a = st.sidebar.slider(
+        "a",
+        min_value=0.00,
+        max_value=0.2,
+        value=A,
+        step=0.01,
+        key=f"slider_{0+st.session_state['slider_version']}",
+    )
+    b = st.sidebar.slider(
+        "b",
+        min_value=0.1,
+        max_value=0.3,
+        value=B,
+        step=0.01,
+        key=f"slider_{1+st.session_state['slider_version']}",
+    )
+    c = st.sidebar.slider(
+        "c",
+        min_value=-80,
+        max_value=-30,
+        value=C,
+        step=1,
+        key=f"slider_{2+st.session_state['slider_version']}",
+    )
+    d = st.sidebar.slider(
+        "d",
+        min_value=0.0,
+        max_value=10.0,
+        value=D,
+        step=0.1,
+        key=f"slider_{3+st.session_state['slider_version']}",
+    )
+
+    # refresh the sliders
+    st.sidebar.button("Reset Params", on_click=reset_sliders)
 
     current = st.slider(
         "Input Current magnitude (mA)",
         min_value=0,
         max_value=30,
-        value=10,
+        value=CURRENT,
         step=1,
     )
 
@@ -31,7 +77,6 @@ def main():
     I_ = np.zeros(len(time_series))
     I_[200:800] = current
 
-    a, b, c, d = PARAMS["IB"].values()
     time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext=I_)
 
     st.plotly_chart(
