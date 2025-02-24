@@ -19,7 +19,7 @@ def main():
         "Input Current magnitude (mA)",
         min_value=0,
         max_value=30,
-        value=10,
+        value=3,
         step=1,
     )
 
