@@ -38,7 +38,7 @@ def main():
         "Here we have some of the behaviour that can be expressed by the Izhikevich model:"
     )
     st.image(
-        "images/izhikevich.png",
+        "https://github.com/AlessandroGhiotto/brain-modeling/blob/main/images/izhikevich.png?raw=true",
         caption="Credits [Eugene M. Izhikevich](https://www.izhikevich.org/publications/spikes.htm)",
     )
 
