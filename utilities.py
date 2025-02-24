@@ -2,8 +2,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
 import seaborn as sns
+import numpy as np
+import plotly.graph_objects as go
+import plotly.figure_factory as ff
 
 sns.set_theme(style="darkgrid")
+
+PARAMS = {
+    "RS": {"a": 0.02, "b": 0.2, "c": -65, "d": 8},
+    "IB": {"a": 0.02, "b": 0.2, "c": -55, "d": 4},
+    "CH": {"a": 0.02, "b": 0.2, "c": -50, "d": 2},
+    "FS": {"a": 0.1, "b": 0.2, "c": -65, "d": 2},
+    "LTS": {"a": 0.02, "b": 0.25, "c": -65, "d": 2},
+    "TC": {"a": 0.02, "b": 0.25, "c": -65, "d": 0.05},
+    "RZ": {"a": 0.1, "b": 0.26, "c": -65, "d": 2},
+}
 
 
 def izhikevic_model(a, b, c, d, dt, T, I_ext, v0=-70, w0=-15):
@@ -172,3 +185,186 @@ def plot_phase_plane(I_ext, a, b, c, d, v0=-70, w0=-15):
     axes[1].set_ylim(-20, 15)
 
     plt.show()
+
+
+def plot_tensor(y_data, ylabel: str = None, key=None):
+
+    x_data = np.linspace(0, 1000, len(y_data))
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=x_data,
+            y=y_data,
+            mode="lines",
+        )
+    )
+
+    if ylabel:
+        fig.update_layout(
+            yaxis_title=ylabel,
+        )
+
+    if key == "error":
+        fig.update_yaxes(type="log")
+
+    fig.update_layout(
+        xaxis_title="Time (ms)",
+        font=dict(family="Arial", size=12),
+        width=400,
+        height=250,
+        margin=dict(
+            l=30,  # left margin
+            r=30,  # right margin
+            t=20,  # top margin
+            b=20,  # bottom margin
+        ),
+    )
+
+    return fig
+
+
+def plot_two_tensors(
+    y_data1,
+    y_data2,
+    label1: str = "Tensor 1",
+    label2: str = "Tensor 2",
+    ylabel: str = None,
+    key=None,
+):
+    x_data = np.linspace(0, 1000, len(y_data1))
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=x_data,
+            y=y_data1,
+            mode="lines",
+            line=dict(color="#9649cb"),
+            name=label1,
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=x_data,
+            y=y_data2,
+            mode="lines",
+            line=dict(color="#f35b04"),
+            name=label2,
+        )
+    )
+
+    if ylabel:
+        fig.update_layout(yaxis_title=ylabel)
+
+    if key == "error":
+        fig.update_yaxes(type="log")
+
+    fig.update_layout(
+        xaxis_title="Time (ms)",
+        font=dict(family="Arial", size=12),
+        width=400,
+        height=400,
+        margin=dict(l=30, r=30, t=20, b=20),
+        legend=dict(x=0.5, y=1.0, xanchor="center", yanchor="bottom", orientation="h"),
+    )
+
+    return fig
+
+
+def plot_phase_plane(
+    V_range,
+    V_null,
+    u_null,
+    V_grid,
+    u_grid,
+    dV_grid,
+    du_grid,
+    V,
+    w,
+    critical_points=None,
+):
+    fig = go.Figure()
+
+    # Plot nullclines
+    fig.add_trace(
+        go.Scatter(
+            x=V_range,
+            y=V_null,
+            mode="lines",
+            name="V nullcline",
+            line=dict(color="#9649cb", width=3),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=V_range,
+            y=u_null,
+            mode="lines",
+            name="w nullcline",
+            line=dict(color="#f35b04", width=3),
+        )
+    )
+
+    # Vector field (quiver plot)
+    fig_quiver = ff.create_quiver(
+        V_grid,
+        u_grid,
+        dV_grid,
+        du_grid,
+        scale=1.5,  # Adjusts vector length
+        arrow_scale=0.3,  # Size of arrowheads
+        name="Vector Field",
+        line_width=1,
+    )
+    for trace in fig_quiver.data:
+        fig.add_trace(trace)  # Add quiver traces to figure
+
+    # Neuron trajectory
+    fig.add_trace(
+        go.Scatter(
+            x=V,
+            y=w,
+            mode="lines",
+            name="trajectory",
+            line=dict(color="#06d6a0", width=1),
+        )
+    )
+
+    # Critical points
+    if critical_points:
+        cp_x, cp_y = zip(*critical_points)  # Unzip the list of tuples
+        fig.add_trace(
+            go.Scatter(
+                x=cp_x,
+                y=cp_y,
+                mode="markers",
+                marker=dict(color="red", size=8, symbol="star"),
+                name="Critical points",
+            )
+        )
+
+    # Starting position
+    fig.add_trace(
+        go.Scatter(
+            x=[V[0]],
+            y=[w[0]],
+            mode="markers",
+            marker=dict(color="lightblue", size=10),
+            name="Start",
+        )
+    )
+
+    # Layout adjustments
+    fig.update_layout(
+        title="Phase Plane",
+        xaxis_title="V (Membrane Potential mV)",
+        yaxis_title="w (Recovery Variable)",
+        xaxis=dict(range=[-85, 40]),
+        yaxis=dict(range=[-20, 15]),
+        legend=dict(x=0.8, y=1),
+        width=500,
+        height=700,
+    )
+
+    return fig

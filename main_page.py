@@ -2,8 +2,8 @@ import streamlit as st
 
 
 def main():
-    st.title("Brain Modeling", anchor=False)
-    st.write("Welcome to the Brain Modeling page!")
+    st.title("Brain Modeling - Project", anchor=False)
+    st.subheader("Izhikevich Model", anchor=False)
     st.markdown(
         r"""The [**Izhikevich model**](https://www.izhikevich.org/publications/spikes.pdf) is a computationally efficient model of neuron dynamics that captures a wide range of spiking and bursting behaviors observed in biological neurons. It is defined by two differential equations: """
     )
@@ -11,26 +11,35 @@ def main():
     st.latex(
         r"""
         \begin{cases}
-        \dot{v} = 0.04v^2 + 5v + 140 - u + I \\
-        \dot{u} = a(bv - u)
+        \dot{v} = 0.04v^2 + 5v + 140 - w + I \\
+        \dot{w} = a(bv - w)
+        \end{cases}"""
+    )
+    st.markdown("""With the auxiliary after-spike reset condition:""")
+
+    st.latex(
+        r"""
+        \text{if } v \geq 30 \text{ mV, then}
+        \begin{cases}
+        v \leftarrow c, \\
+        w \leftarrow w + d
         \end{cases}"""
     )
 
     st.markdown(
         """where:  
         - v represents the membrane potential,  
-        - u is a recovery variable,  
+        - w is a recovery variable,  
         - I is the external input current,  
-        - a, b, c, d are parameters that define different neuron types.  
-    When v reaches a threshold (e.g., 30 mV), it is reset:"""
+        - a, b, c, d are parameters that define different neuron types."""
     )
 
-    st.latex(r"""v \leftarrow c, \quad u \leftarrow u + d """)
-
     st.markdown(
-        r"""Here we have some of the behaviour that can be expressed by the Izhikevich model:
-
-        ![image.png](code/izhikevich.png)"""
+        "Here we have some of the behaviour that can be expressed by the Izhikevich model:"
+    )
+    st.image(
+        "images/izhikevich.png",
+        caption="Credits [Eugene M. Izhikevich](https://www.izhikevich.org/publications/spikes.htm)",
     )
 
 
