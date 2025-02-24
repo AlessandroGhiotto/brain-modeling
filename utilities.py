@@ -114,81 +114,8 @@ def find_critical_point(a, b, I):
     return None
 
 
-def plot_time_evolution(a, b, c, d, dt, T, I_ext, v0=-70):
-    """Plots the time evolution of the Izhikevich neuron model."""
-
-    time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext=I_ext, v0=v0)
-
-    fig, axes = plt.subplots(2, 1, figsize=(10, 6))
-
-    # plot the stimulus
-    axes[0].plot(time, I_ext)
-    axes[0].set_xlabel("Time (ms)")
-    axes[0].set_ylabel("Current (pA)")
-    axes[0].set_title("Input Current")
-
-    # plotting the model output
-    axes[1].plot(time, V)
-    axes[1].set_xlabel("Time (ms)")
-    axes[1].set_ylabel("Membrane Potential (mV)")
-    axes[1].set_title("Izhikevic model")
-
-    plt.tight_layout()
-    plt.show()
-
-
-def plot_phase_plane(I_ext, a, b, c, d, v0=-70, w0=-15):
-    """Plots the phase plane, nullclines, vector field, and voltage trace."""
-    dt = 0.1
-    T = 200
-
-    time, V, w = izhikevic_model(a, b, c, d, dt, T, I_ext, v0, w0)
-
-    V_range, V_null, u_null = compute_nullclines(a, b, I_ext)
-    V_grid, u_grid, dV_grid, du_grid = compute_vector_field(a, b, I_ext)
-    critical_points = find_critical_point(a, b, I_ext)
-
-    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
-
-    # Voltage over time
-    axes[0].plot(time, V, label="V(t)")
-    axes[0].plot(time, w, label="w(t)")
-    axes[0].set_xlabel("Time (ms)")
-    axes[0].set_ylabel("State variable")
-    axes[0].set_title("Time Evolution")
-    axes[0].legend()
-
-    # Phase plane: V vs. w
-    axes[1].plot(V_range, V_null, label="V nullcline", color="blue")
-    axes[1].plot(V_range, u_null, label="w nullcline", color="green")
-
-    # Plot vector field
-    axes[1].quiver(V_grid, u_grid, dV_grid, du_grid, color="gray", alpha=0.5, scale=30)
-
-    # Plot neuron trajectory
-    axes[1].plot(V, w, color="red", label="trajectory")
-
-    # Mark critical point
-    if critical_points:
-        for cp in critical_points:
-            cp_x, cp_y = cp
-            axes[1].plot(cp_x, cp_y, "r*", markersize=8)
-
-    # starting position
-    axes[1].plot(V[0], w[0], "bo", label="start", markersize=8)
-
-    axes[1].set_xlabel("V (Membrane Potential mV)")
-    axes[1].set_ylabel("w (Recovery Variable)")
-    axes[1].set_title("Phase Plane")
-    axes[1].legend(loc="upper right")
-    axes[1].grid()
-    axes[1].set_xlim(-85, 35)
-    axes[1].set_ylim(-20, 15)
-
-    plt.show()
-
-
 def plot_tensor(y_data, ylabel: str = None, key=None):
+    """Plot a single tensor. Used for plotting the current or the state variables."""
 
     x_data = np.linspace(0, 1000, len(y_data))
 
@@ -233,6 +160,7 @@ def plot_two_tensors(
     ylabel: str = None,
     key=None,
 ):
+    """Plot two tensors. Used for plotting the the two state variables together."""
     x_data = np.linspace(0, len(y_data1), len(y_data1))
 
     fig = go.Figure()
@@ -285,6 +213,8 @@ def plot_phase_plane(
     w,
     critical_points=None,
 ):
+    """Plot the phase plane of the Izhikevich model."""
+
     fig = go.Figure()
 
     # Plot nullclines
