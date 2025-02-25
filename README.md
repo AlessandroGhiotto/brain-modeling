@@ -1,3 +1,3 @@
 # brain-modeling
 
-<https://brain-modeling.streamlit.app/>
+<https://brain-modeling-project.streamlit.app/>
