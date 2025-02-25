@@ -3,7 +3,12 @@ import streamlit as st
 
 def main():
     st.title("Brain Modeling - Project", anchor=False)
-    st.markdown("Authors: Alessandro Ghiotto 513944, Alessandro Montini 555555")
+    st.markdown(
+        """Author: &nbsp; Alessandro Ghiotto &nbsp;
+        [![Personal Profile](https://badgen.net/badge/icon/GitHub?icon=github&label)](https://github.com/AlessandroGhiotto) 
+        """,
+        unsafe_allow_html=True,
+    )
     st.subheader("Izhikevich Model", anchor=False)
     st.markdown(
         r"""The [**Izhikevich model**](https://www.izhikevich.org/publications/spikes.pdf) is a computationally efficient model of neuron dynamics that captures a wide range of spiking and bursting behaviors observed in biological neurons. It is defined by two differential equations: """
