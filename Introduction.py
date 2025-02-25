@@ -33,7 +33,8 @@ def main():
     )
 
     st.markdown(
-        """where:  
+        """
+        where:  
         - v represents the membrane potential,  
         - w is a recovery variable,  
         - I is the external input current,  
